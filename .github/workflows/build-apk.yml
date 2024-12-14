@@ -1,0 +1,59 @@
+name: Flet Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Flutter
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 'stable'
+
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: |
+        flutter doctor
+        flutter pub get
+
+    # Step 4: Set up Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    # Step 5: Install Flet library
+    - name: Install Flet
+      run: |
+        python -m pip install --upgrade pip
+        pip install flet
+
+    # Step 6: Build the Flutter app
+    - name: Build Flutter app
+      run: |
+        flet build apk --release
+
+    # Step 7: Verify build artifacts
+    - name: Verify build output
+      run: |
+        dir .\build\app\outputs\flutter-apk\
+
+    # (Optional) Step 8: Archive the build artifact
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: flutter-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
