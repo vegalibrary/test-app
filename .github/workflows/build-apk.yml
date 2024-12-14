@@ -1,59 +1,58 @@
-name: Flet Build
+name: Flutter and Python Build
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the code
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    # Step 2: Set up Flutter
+    # Setup Flutter
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 'stable'
-
-    # Step 3: Install dependencies
-    - name: Install dependencies
-      run: |
-        flutter doctor
-        flutter pub get
-
-    # Step 4: Set up Python
+        flutter-version: '3.24.0'
+        channel: 'stable'
+    
+    # Setup Python
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-
-    # Step 5: Install Flet library
-    - name: Install Flet
+    
+    # Install Python dependencies
+    - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
         pip install flet
-
-    # Step 6: Build the Flutter app
-    - name: Build Flutter app
+    
+    # Install Flutter dependencies
+    - name: Install Flutter dependencies
+      run: |
+        flutter pub get
+        flutter doctor -v
+    
+    # Setup Java for Android build
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    
+    # Build APK using Flet
+    - name: Build APK
       run: |
         flet build apk
-
-    # Step 7: Verify build artifacts
-    - name: Verify build output
-      run: |
-        dir .\build\app\outputs\flutter-apk\
-
-    # (Optional) Step 8: Archive the build artifact
+    
+    # Upload APK as artifact
     - name: Upload APK
       uses: actions/upload-artifact@v3
       with:
-        name: flutter-apk
+        name: app-release
         path: build/app/outputs/flutter-apk/app-release.apk
