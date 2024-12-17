@@ -23,7 +23,24 @@ env:
   FLUTTER_VERSION: 3.24.0
 
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.BUILD_VERSION }}-${{ env.BUILD_NUMBER }}
+          release_name: Release ${{ env.BUILD_VERSION }} (Build ${{ env.BUILD_NUMBER }})
+          draft: false
+          prerelease: false
+
   build-linux:
+    needs: create-release
     runs-on: ubuntu-latest
 
     steps:
@@ -65,7 +82,18 @@ jobs:
         if-no-files-found: warn
         overwrite: false
 
+    - name: Upload Linux Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./build/linux/x64/release/bundle/app
+        asset_name: app-linux-${{ env.BUILD_VERSION }}
+        asset_content_type: application/x-executable
+
   build-macos:
+    needs: create-release
     runs-on: macos-latest
 
     steps:
@@ -100,7 +128,18 @@ jobs:
         if-no-files-found: warn
         overwrite: false
 
+    - name: Upload macOS Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./build/macos/Build/Products/Release/app.app
+        asset_name: app-macos-${{ env.BUILD_VERSION }}.app
+        asset_content_type: application/octet-stream
+
   build-windows:
+    needs: create-release
     runs-on: windows-latest
 
     steps:
@@ -135,7 +174,18 @@ jobs:
         if-no-files-found: warn
         overwrite: false
 
+    - name: Upload Windows Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./build/windows/x64/runner/Release/app.exe
+        asset_name: app-windows-${{ env.BUILD_VERSION }}.exe
+        asset_content_type: application/octet-stream
+
   build-aab:
+    needs: create-release
     runs-on: macos-latest
 
     steps:
@@ -170,7 +220,18 @@ jobs:
         if-no-files-found: warn
         overwrite: false
 
+    - name: Upload AAB Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./build/aab/app-release.aab
+        asset_name: app-${{ env.BUILD_VERSION }}.aab
+        asset_content_type: application/octet-stream
+
   build-apk:
+    needs: create-release
     runs-on: ubuntu-latest
 
     steps:
@@ -211,7 +272,18 @@ jobs:
         if-no-files-found: warn
         overwrite: false
 
+    - name: Upload APK Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./build/apk/app-release.apk
+        asset_name: app-${{ env.BUILD_VERSION }}.apk
+        asset_content_type: application/vnd.android.package-archive
+
   build-ipa:
+    needs: create-release
     runs-on: macos-latest
 
     steps:
@@ -245,3 +317,13 @@ jobs:
         path: build/ipa
         if-no-files-found: warn
         overwrite: false
+
+    - name: Upload IPA Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./build/ipa/Runner.ipa
+        asset_name: app-${{ env.BUILD_VERSION }}.ipa
+        asset_content_type: application/octet-stream
