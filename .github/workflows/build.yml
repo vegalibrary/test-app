@@ -240,33 +240,11 @@ jobs:
       run: |
         flutter config --no-analytics
         flet build ipa --verbose --build-number=$BUILD_NUMBER --build-version=$BUILD_VERSION 
-        
-    - name: Create ExportOptions.plist
-      run: |
-        echo '<?xml version="1.0" encoding="UTF-8"?>' > ExportOptions.plist
-        echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> ExportOptions.plist
-        echo '<plist version="1.0">' >> ExportOptions.plist
-        echo '<dict>' >> ExportOptions.plist
-        echo '    <key>method</key>' >> ExportOptions.plist
-        echo '    <string>ad-hoc</string>' >> ExportOptions.plist
-        echo '    <key>teamID</key>' >> ExportOptions.plist
-        echo '    <string>TheamID</string>' >> ExportOptions.plist
-        echo '    <key>signingStyle</key>' >> ExportOptions.plist
-        echo '    <string>automatic</string>' >> ExportOptions.plist
-        echo '</dict>' >> ExportOptions.plist
-        echo '</plist>' >> ExportOptions.plist
-    
-    - name: Export IPA from .xcarchive
-      run: |
-        xcodebuild -exportArchive \
-            -archivePath build/ipa/Runner.xcarchive \
-            -exportPath build/ipa/output \
-            -exportOptionsPlist ExportOptions.plist
 
     - name: Upload IPA Artifact
       uses: actions/upload-artifact@v4.3.4
       with:
         name: ipa-build-${{ env.BUILD_VERSION }}
-        path: build/ipa/output/*.ipa
+        path: build/ipa
         if-no-files-found: warn
         overwrite: false
