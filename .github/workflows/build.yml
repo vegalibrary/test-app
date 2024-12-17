@@ -32,7 +32,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ env.BUILD_VERSION }}-${{ env.BUILD_NUMBER }}
           release_name: Release ${{ env.BUILD_VERSION }} (Build ${{ env.BUILD_NUMBER }})
@@ -85,7 +85,7 @@ jobs:
     - name: Upload Linux Release Asset
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create-release.outputs.upload_url }}
         asset_path: ./build/linux/x64/release/bundle/app
@@ -131,7 +131,7 @@ jobs:
     - name: Upload macOS Release Asset
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create-release.outputs.upload_url }}
         asset_path: ./build/macos/Build/Products/Release/app.app
@@ -177,7 +177,7 @@ jobs:
     - name: Upload Windows Release Asset
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create-release.outputs.upload_url }}
         asset_path: ./build/windows/x64/runner/Release/app.exe
@@ -223,7 +223,7 @@ jobs:
     - name: Upload AAB Release Asset
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create-release.outputs.upload_url }}
         asset_path: ./build/aab/app-release.aab
@@ -275,7 +275,7 @@ jobs:
     - name: Upload APK Release Asset
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create-release.outputs.upload_url }}
         asset_path: ./build/apk/app-release.apk
@@ -321,7 +321,7 @@ jobs:
     - name: Upload IPA Release Asset
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create-release.outputs.upload_url }}
         asset_path: ./build/ipa/Runner.ipa
